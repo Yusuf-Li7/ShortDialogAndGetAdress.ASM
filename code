@@ -1,0 +1,63 @@
+format PE console
+
+entry start
+
+include 'win32a.inc'
+
+section '.data' data readable writable
+        formatNum db '%d', 0
+        formatStr db '%s', 0
+
+        Name rd 2
+        Age rd 1
+
+        wn db 'What is your name? ', 0
+        ho db 'How old are you? ', 0
+        hello db 'Hello, %s, you are %d ', 0
+
+        address db 10, 13, 'hello var address is %d'
+
+        NULL = 0
+
+section '.code' code readable executable
+        start:
+               push wn
+               call [printf]
+
+               push Name
+               push formatStr
+               call [scanf]
+
+               push ho
+               call [printf]
+
+               push Age
+               push formatNum
+               call [scanf]
+
+               push [Age]
+               push Name
+               push hello
+               call [printf]
+
+               lea eax, [hello]
+               push eax
+               push address
+               call [printf]
+
+               call [getch]
+
+               push NULL
+               call [ExitProcess]
+
+section '.idata' import data readable
+        library kernel, 'kernel32.dll',\
+                msvcrt, 'msvcrt.dll'
+
+        import kernel,\
+               ExitProcess, 'ExitProcess'
+
+        import msvcrt,\
+               printf, 'printf',\
+               getch, '_getch',\
+               scanf, 'scanf'
